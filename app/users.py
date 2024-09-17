@@ -12,7 +12,13 @@ from fastapi_users.db import BeanieUserDatabase, ObjectIDIDMixin
 
 from db import User, get_user_db
 
+from postmarker.core import PostmarkClient
+
 SECRET = "d0fc29200768eac3010fef523ded1dc67f78a06de9b5adb5c439522bf8bb0fb8"
+POSTMARK_SERVER_API_TOKEN = "57ed2191-9ca6-46a3-bcd3-ddc999a73f7e"
+
+postmark = PostmarkClient(
+    server_token=POSTMARK_SERVER_API_TOKEN, verbosity=3)
 
 
 class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
@@ -26,6 +32,20 @@ class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
         self, user: User, token: str, request: Optional[Request] = None
     ):
         print(f"User {user.id} has forgot their password. Reset token: {token}")
+        template_model = {
+            "product_url": "product_url_Value",
+            "product_name": "Chatbox Guru",
+            "name": user.email,
+            "token_reset": token,
+            "company_name": "Computer Science Project Unit",
+            "company_address": "Nowherelol"
+        }
+        postmark.emails.send_with_template(
+            From='21870666@student.curtin.edu.au',
+            To=user.email,
+            TemplateId=37325256,
+            TemplateModel=template_model
+        )
 
     async def on_after_request_verify(
         self, user: User, token: str, request: Optional[Request] = None
@@ -49,6 +69,8 @@ auth_backend = AuthenticationBackend(
     name="jwt",
     transport=bearer_transport,
     get_strategy=get_jwt_strategy,
+
+
 )
 
 fastapi_users = FastAPIUsers[User, PydanticObjectId](
