@@ -15,13 +15,15 @@ CORS(app)
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 mongo = PyMongo(app)
 
-## API endpoint to allow user signup
+# API endpoint to allow user signup
+
+
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.json
     username = data.get('username')
     password = data.get('password')
-    
+
     if not username or not password:
         return jsonify({"message": "Username and password are required"}), 400
 
@@ -40,13 +42,15 @@ def signup():
     })
     return jsonify({"message": "User created successfully"}), 201
 
-## API endpoint to allow user signup
+# API endpoint to allow user signup
+
+
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
     username = data.get('username')
     password = data.get('password')
-    
+
     # If user does not supply username or password
     if not username or not password:
         return jsonify({"message": "Username and password are required"}), 400
@@ -58,19 +62,24 @@ def login():
     else:
         return jsonify({"message": "Invalid username/password"}), 401
 
-## API to retrieve conversations for a user
+# API to retrieve conversations for a user
+
+
 @app.route('/api/conversations', methods=['GET'])
 def get_conversations():
     username = request.args.get('username')
     if not username:
         return jsonify({"message": "Username is required"}), 400
 
-    conversations = list(mongo.db.conversations.find({"username": username}, {"messages": 0}))
+    conversations = list(mongo.db.conversations.find(
+        {"username": username}, {"messages": 0}))
     for conversation in conversations:
         conversation["_id"] = str(conversation["_id"])
     return jsonify(conversations)
 
-## API To create a new conversation for a user
+# API To create a new conversation for a user
+
+
 @app.route('/api/conversation', methods=['POST'])
 def create_conversation():
     data = request.json
@@ -85,29 +94,33 @@ def create_conversation():
     return jsonify({"conversation_id": str(conversation_id)})
 
 
-## API to delete the conversation thread
+# API to delete the conversation thread
 @app.route('/api/conversation/<conversation_id>', methods=['DELETE'])
 def delete_conversation(conversation_id):
-    result = mongo.db.conversations.delete_one({"_id": ObjectId(conversation_id)})
+    result = mongo.db.conversations.delete_one(
+        {"_id": ObjectId(conversation_id)})
     if result.deleted_count == 0:
         return jsonify({"message": "Conversation not found"}), 404
     return jsonify({"message": "Conversation deleted"}), 200
 
 
-### API to retrieve messages for a specific conversation
+# API to retrieve messages for a specific conversation
 @app.route('/api/messages', methods=['GET'])
 def get_messages():
     conversation_id = request.args.get('conversation_id')
     if not conversation_id:
         return jsonify({"message": "Conversation ID is required"}), 400
 
-    conversation = mongo.db.conversations.find_one({"_id": ObjectId(conversation_id)})
+    conversation = mongo.db.conversations.find_one(
+        {"_id": ObjectId(conversation_id)})
     if not conversation:
         return jsonify({"message": "Conversation not found"}), 404
 
     return jsonify(conversation['messages'])
 
-## API to add messages to specific conversations
+# API to add messages to specific conversations
+
+
 @app.route('/api/messages', methods=['POST'])
 def add_message():
     data = request.json
@@ -130,6 +143,7 @@ def add_message():
     )
 
     return jsonify({'text': bot_response, 'user': 'bot'})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
