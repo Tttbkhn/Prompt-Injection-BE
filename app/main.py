@@ -7,7 +7,6 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
-from pydantic import BaseModel
 
 from fastapi_users.authentication import BearerTransport
 
@@ -17,6 +16,11 @@ from beanie import init_beanie
 from db import User, db
 from schemas import UserCreate, UserRead, UserUpdate
 from users import auth_backend, current_active_user, fastapi_users
+
+from models.conversations import Conversation, NewConversation
+from models.messages import Message, NewMessage
+
+from routers import conversations, messages
 
 origins = [
     "http://localhost",
@@ -31,6 +35,10 @@ async def lifespan(app: FastAPI):
         database=db,
         document_models=[
             User,
+            Conversation,
+            Message,
+            NewMessage,
+            NewConversation
         ],
     )
     yield
@@ -70,6 +78,9 @@ app.include_router(
     prefix="/api/v2/users",
     tags=["users"],
 )
+
+app.include_router(conversations.router)
+app.include_router(messages.router)
 
 
 @app.get("/authenticated-route")
