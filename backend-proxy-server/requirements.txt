@@ -1,0 +1,6 @@
+fastapi[standard]~=0.114.0
+fastapi-users[beanie]
+uvicorn[standard]
+ollama~=0.3.3
+torch~=2.4.1
+transformers~=4.44.2

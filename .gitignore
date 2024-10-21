@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# prompt-injection-detection, get from AI repo
+backend-proxy-server/app/prompt_injection/malicious-prompt-detector/model.safetensors
+
 # C extensions
 *.so
 

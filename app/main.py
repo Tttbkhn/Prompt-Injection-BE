@@ -25,7 +25,7 @@ from routers import conversations, messages
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "http://chatbox.guru"
+    "https://chatbox.guru"
 ]
 
 

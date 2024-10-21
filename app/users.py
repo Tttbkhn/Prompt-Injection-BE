@@ -36,7 +36,7 @@ class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
             "product_url": "product_url_Value",
             "product_name": "Chatbox Guru",
             "name": user.email,
-            "token_reset": f"http://localhost:3000/reset-password?token={token}",
+            "token_reset": f"https://chatbox.guru/reset-password?token={token}",
             "company_name": "Computer Science Project Unit",
             "company_address": "Nowherelol"
         }
